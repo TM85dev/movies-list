@@ -108,7 +108,7 @@ $arrow: url('/img/arrow.png');
     align-items: center;
     justify-content: space-around;
     width: 100%;
-    height: 60px;
+    height: 50px;
     padding: 0 14px;
     background-color: $bg-color;
     border-top: 1px solid $green;
@@ -135,10 +135,15 @@ $arrow: url('/img/arrow.png');
         width: 18px;
         height: 18px;
         background-image: $arrow;
-        &:first-of-type {
+        transition: all 0.4s;
+        cursor: pointer;
+        &:hover {
+            filter: saturate(2);
+        }
+        &.left-arrow {
             left: 3px;
         }
-        &:last-of-type {
+        &.right-arrow {
             right: 3px;
             transform: rotateY(180deg);
         }

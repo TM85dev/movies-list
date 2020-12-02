@@ -4,10 +4,10 @@
         <div class="logo"></div>
         <ul>
             <li><a href="/" :class="activeLink('/')">Home</a></li>
-            <li><a href="/Movies" :class="activeLink('/Movies')">Movies</a></li>
-            <li><a href="/Series" :class="activeLink('/Series')">Series</a></li>
-            <li><a href="/Incomings" :class="activeLink('/Incoming')">Incoming</a></li>
-            <li><a href="/Sign-in" :class="activeLink('/Sign-in')">Sign In</a></li>
+            <li><a href="/movies" :class="activeLink('/movies')">Movies</a></li>
+            <li><a href="/series" :class="activeLink('/series')">Series</a></li>
+            <li><a href="/incomings" :class="activeLink('/incoming')">Incoming</a></li>
+            <li><a href="/sign-in" :class="activeLink('/sign-in')">Sign In</a></li>
         </ul>
     </nav>    
 </template>
@@ -53,6 +53,7 @@ $logo: url('/img/logo.png');
         left: 0;
         height: 100%;
         background-color: $menu-bg;
+        z-index: 99;
         .close {
             position: absolute;
             top: 5%;

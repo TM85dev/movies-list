@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Api;
+use App\Http\Controllers\MovieController;
+use App\Http\Controllers\SerieController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,15 +18,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function() {
-    return view('home');
-});
-Route::get('/Movies', function() {
-    return view('movies');
-});
-Route::get('/Series', function() {
-    return view('series');
-});
+Route::get('/api/all', 'Api@all');
+Route::get('/api/all/genres/{genre}', 'Api@genre');
+
+Route::get('/api/movies', 'Api@movies');
+
+Route::get('/api/series', 'Api@series');
+
+
+Route::resource('/', 'HomeController');
+Route::resource('/movies', 'MovieController');
+Route::resource('/series', 'SerieController');
 
 Auth::routes();
 

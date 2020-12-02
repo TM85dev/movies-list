@@ -21,8 +21,12 @@
 </head>
 <body>
     <div id="app">
-        @include('layouts.main-menu')
-        @yield('content')
+        <div>
+            @include('layouts.main-menu')
+        </div>
+        <div>
+            @yield('content')
+        </div>
     </div>
 </body>
 </html>

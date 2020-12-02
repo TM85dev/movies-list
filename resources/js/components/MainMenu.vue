@@ -16,8 +16,6 @@
     export default {
         methods: {
             openOverlayMenu() {
-                this.$store.commit('increment')
-                console.log(this.$store.state.count);
                 document.querySelector('.overlay-menu').style.display = 'flex';
                 this.$anime.timeline().add({
                     targets: '.overlay-menu',
@@ -63,7 +61,7 @@ nav.main-menu {
         }
     }
     .logo {
-        margin-left: 5%;
+        margin: 0 5%;
         background-image: $logo;
         width: 130px;
         height: 50px;
