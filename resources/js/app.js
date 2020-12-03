@@ -47,15 +47,29 @@ const store = new Vuex.Store({
         part: 0,
         parts: 2,
         data: [],
+        years: [],
         select: 'all',
-        // genre: 'all genres'
+        currentGenre: 'all',
+        currentYears: 'all',
+        currentSort: 'asort-title'
     },
     mutations: {
-        // FILTER_BY_GENRE(state, genre) {
-        // },
-        // SET_GENRE(state, genre) {
-        //     state.genre = genre;
-        // },
+        SET_SORT(state, sort) {
+            state.currentSort = sort;
+        },
+        SET_YEARS(state, years) {
+            state.years = years;
+        },
+        SET_CURRENT_YEARS(state, years) {
+            if(years !== 'all' && years.length > 1) {
+                state.currentYears = years.sort();
+            } else {
+                state.currentYears = years;
+            }
+        },
+        SET_GENRE(state, genre) {
+            state.currentGenre = genre;
+        },
         SET_SELECT(state, select) {
             state.select = select
         },
@@ -79,9 +93,10 @@ const store = new Vuex.Store({
         }
     },
     actions: {
-        async fetchData({ commit, state }, apiLink) {
+        async fetchData({ commit, dispatch, state }) {
             commit('IS_LOADING', true);
             commit('NEXT_PART', 0);
+            let apiLink = `/api/${state.select}/${state.currentGenre}/${state.currentYears}/${state.currentSort}`;
             await axios.get(apiLink)
                 .then(res => {
                     commit('PARTS_LENGTH', res.data.length);
@@ -90,17 +105,22 @@ const store = new Vuex.Store({
             commit('IS_LOADING', false);
             commit('NEXT_PART', 1);
         },
-        async fetchChunkData({ commit, state }, apiLink) {
-            commit('IS_CHUNK_LOADING', true)
-            commit('NEXT_PART', state.part + 1)
+        async fetchChunkData({ commit, state }) {
+            commit('IS_CHUNK_LOADING', true);
+            document.body.style.overflow = 'hidden';
+            let apiLink = `/api/${state.select}/${state.currentGenre}/${state.currentYears}/${state.currentSort}`;
             await axios.get(apiLink)
-                .then(res => {
-                    let chunk = Object.values(res.data[1]);
-                    commit('PARTS_LENGTH', res.data.length);
-                    commit('GET_CHUNK_DATA', chunk)
-                });
-            commit('IS_CHUNK_LOADING', false)
-        }
+            .then(res => {
+                console.log(state.part);
+                let chunk = Object.values(res.data[state.part]);
+                commit('PARTS_LENGTH', res.data.length);
+                commit('GET_CHUNK_DATA', chunk);
+                console.log(chunk);
+            });
+            commit('NEXT_PART', state.part + 1);
+            commit('IS_CHUNK_LOADING', false);
+            document.body.style.overflow = '';
+        },
     }
 })
 

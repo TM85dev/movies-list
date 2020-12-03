@@ -31,7 +31,7 @@ export default {
         }
     },
     mounted() {
-        this.$store.dispatch('fetchData', '/api/all');
+        this.$store.dispatch('fetchData');
         this.$nextTick(function() {
             window.addEventListener('scroll', this.onScroll);
         })
@@ -47,7 +47,7 @@ export default {
                     let marginTopElement = element.getBoundingClientRect().bottom;
                     let innerHeight = window.innerHeight;
                     if((marginTopElement - innerHeight) < 100) {
-                        this.$store.dispatch('fetchChunkData', `/api/${this.$store.state.select}`);
+                        this.$store.dispatch('fetchChunkData');
                     }
                 }
             }

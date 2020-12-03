@@ -3303,13 +3303,28 @@ __webpack_require__.r(__webpack_exports__);
         years: false,
         sorts: false
       },
-      years: [],
-      listOfYears: [],
-      genres: ['All Genres', 'Action', 'Adventure', 'Biography', 'Comedy', 'Drama', 'Document']
+      genres: ['All Genres', 'Action', 'Adventure', 'Biography', 'Comedy', 'Drama', 'Document'],
+      sorts: [{
+        name: 'A TO Z',
+        kind: '(title)',
+        sorting: 'asort-title'
+      }, {
+        name: 'Z TO A',
+        kind: '(title)',
+        sorting: 'dsort-title'
+      }, {
+        name: '0 TO 9',
+        kind: '(year)',
+        sorting: 'asort-year'
+      }, {
+        name: '9 TO 0',
+        kind: '(year)',
+        sorting: 'dsort-year'
+      }]
     };
   },
   beforeMount: function beforeMount() {
-    this.years = this.createYears;
+    this.$store.commit('SET_YEARS', this.createYears);
   },
   computed: {
     createYears: function createYears() {
@@ -3339,7 +3354,13 @@ __webpack_require__.r(__webpack_exports__);
         list.style.display = 'block';
         this.$anime.timeline().add({
           targets: list,
-          height: ['0px', '400px'],
+
+          /* a-z-a/ 0-9-0  */
+
+          /* genre */
+
+          /*years*/
+          height: value === 'sorts' ? ['0px', '316px'] : value === 'genres' ? ['0px', '536px'] : ['0px', '776px'],
           easing: 'easeOutExpo',
           duration: 100
         }).add({
@@ -3372,22 +3393,76 @@ __webpack_require__.r(__webpack_exports__);
         }, 1200);
       }
     },
+
+    /* SORT BY GENRE */
     selectGenre: function selectGenre(genre) {
-      // this.$store.commit('SET_GENRE', genre.toLowerCase());
-      this.$store.commit('FILTER_BY_GENRE', genre.toLowerCase());
+      if (genre === 'All Genres') {
+        this.$store.commit('SET_GENRE', 'all');
+      } else {
+        this.$store.commit('SET_GENRE', genre.toLowerCase());
+      }
+
+      this.$store.dispatch('fetchData');
+      this.dropdownHandler('genres');
     },
+
+    /* SORT BY YEAR */
     yearSelected: function yearSelected(id) {
-      this.years[id].selected = !this.years[id].selected;
+      var years = this.$store.state.years;
+      var currentYears = this.$store.state.currentYears;
+      years[id].selected = !years[id].selected;
+
+      if (currentYears === 'all') {
+        currentYears = [];
+      }
+
+      if (years[id].selected) {
+        currentYears = currentYears.concat([years[id].current]);
+
+        if (currentYears.length === years.length) {
+          currentYears = 'all';
+        }
+      } else {
+        var filtered = [];
+        filtered = years.filter(function (year) {
+          return year.selected;
+        });
+        filtered = filtered.map(function (year) {
+          return year.current;
+        });
+        currentYears = filtered;
+      }
+
+      this.$store.commit('SET_YEARS', years);
+      this.$store.commit('SET_CURRENT_YEARS', currentYears);
+      this.$store.dispatch('fetchData');
     },
     selectAllYears: function selectAllYears() {
-      this.years.forEach(function (year) {
+      var years = this.$store.state.years;
+      var currentYears = 'all';
+      years.forEach(function (year) {
         return year.selected = true;
       });
+      this.$store.commit('SET_YEARS', years);
+      this.$store.commit('SET_CURRENT_YEARS', currentYears);
+      this.$store.dispatch('fetchData');
     },
     removeSelectAllYears: function removeSelectAllYears() {
-      this.years.forEach(function (year) {
+      var years = this.$store.state.years;
+      var currentYears = [];
+      years.forEach(function (year) {
         return year.selected = false;
       });
+      this.$store.commit('SET_YEARS', years);
+      this.$store.commit('SET_CURRENT_YEARS', currentYears);
+    },
+
+    /* SORT BY ASC/DESC */
+    sortSelected: function sortSelected(e, sort) {
+      e.preventDefault();
+      this.$store.commit('SET_SORT', sort);
+      this.$store.dispatch('fetchData');
+      this.dropdownHandler('sorts');
     }
   }
 });
@@ -3439,8 +3514,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     categoryHandler: function categoryHandler(e, select) {
+      e.preventDefault();
       this.$store.commit('SET_SELECT', select);
-      this.$store.dispatch('fetchData', "/api/".concat(select));
+      this.$store.dispatch('fetchData');
       document.querySelectorAll('.category-sorting a').forEach(function (el) {
         return el.classList.remove('active');
       });
@@ -3728,7 +3804,7 @@ __webpack_require__.r(__webpack_exports__);
     return {};
   },
   mounted: function mounted() {
-    this.$store.dispatch('fetchData', '/api/all');
+    this.$store.dispatch('fetchData');
     this.$nextTick(function () {
       window.addEventListener('scroll', this.onScroll);
     });
@@ -3746,7 +3822,7 @@ __webpack_require__.r(__webpack_exports__);
           var innerHeight = window.innerHeight;
 
           if (marginTopElement - innerHeight < 100) {
-            this.$store.dispatch('fetchChunkData', "/api/".concat(this.$store.state.select));
+            this.$store.dispatch('fetchChunkData');
           }
         }
       }
@@ -8196,7 +8272,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".filter-menu[data-v-5ba13222] {\n  display: flex;\n  flex-direction: column;\n  margin-top: 16px;\n}\n.filter-menu > div .title[data-v-5ba13222] {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  width: 100%;\n  height: 60px;\n  background-color: #1A1A1A;\n  border-top: 1px solid #009846;\n  border-bottom: 1px solid #009846;\n}\n.filter-menu > div .title .arrow[data-v-5ba13222] {\n  width: 30px;\n  height: 20px;\n  margin: -16px 0 0 16px;\n  background-image: url(\"/img/arrow.png\");\n  transform: rotate(-90deg);\n  background-repeat: no-repeat;\n  background-size: contain;\n}\n.filter-menu > div .title .arrow.active[data-v-5ba13222] {\n  transform: rotate(90deg);\n  margin: 16px 0 0 16px;\n}\n.filter-menu > div .title button[data-v-5ba13222] {\n  background: transparent;\n  color: #C5C6C6;\n  outline: 0;\n  border: 0;\n  font-size: 1.4em;\n}\n.filter-menu > div ul[data-v-5ba13222] {\n  width: 100%;\n  margin: 0;\n  padding: 0;\n  height: 0;\n  display: none;\n  background-color: #1A1A1A;\n  transition: all 0.4s;\n}\n.filter-menu > div ul li[data-v-5ba13222] {\n  padding: 16px 0 16px 50px;\n  display: block;\n  font-size: 1em;\n  line-height: 3em;\n  opacity: 0;\n  color: #C5C6C6;\n}\n.filter-menu > div ul li .list-of-years[data-v-5ba13222] {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: center;\n  border: 1px solid gray;\n  padding: 0;\n  margin: 0 50px 0 0;\n  line-height: 2.6em;\n}\n.filter-menu > div ul li .list-of-years div[data-v-5ba13222] {\n  color: gray;\n  margin: 0 16px;\n  transition: all 0.4s;\n}\n.filter-menu > div ul li input[data-v-5ba13222] {\n  background-color: #1a1a1a;\n  border: none;\n  border-bottom: 1px solid gray;\n  width: calc(100% - 50px);\n  padding: 10px;\n  line-height: 0em;\n  outline: 0;\n  color: lightgray;\n  transition: all 0.4s;\n}\n.filter-menu > div ul li input[data-v-5ba13222]:focus {\n  border-bottom-color: lightgray;\n}\n.filter-menu > div ul li p[data-v-5ba13222] {\n  display: flex;\n  justify-content: space-between;\n  line-height: 1.4em;\n  font-size: 0.8em;\n  color: gray;\n  margin: -20px 50px 10px 0;\n  text-align: justify;\n}\n.filter-menu .sorts ul li span[data-v-5ba13222] {\n  font-size: 0.8em;\n  color: gray;\n  text-transform: uppercase;\n}", ""]);
+exports.push([module.i, ".filter-menu[data-v-5ba13222] {\n  display: flex;\n  flex-direction: column;\n  margin-top: 16px;\n}\n.filter-menu > div .title[data-v-5ba13222] {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  width: 100%;\n  height: 60px;\n  background-color: #1A1A1A;\n  border-top: 1px solid #009846;\n  border-bottom: 1px solid #009846;\n}\n.filter-menu > div .title .arrow[data-v-5ba13222] {\n  width: 30px;\n  height: 20px;\n  margin: -16px 0 0 16px;\n  background-image: url(\"/img/arrow.png\");\n  transform: rotate(-90deg);\n  background-repeat: no-repeat;\n  background-size: contain;\n}\n.filter-menu > div .title .arrow.active[data-v-5ba13222] {\n  transform: rotate(90deg);\n  margin: 16px 0 0 16px;\n}\n.filter-menu > div .title button[data-v-5ba13222] {\n  background: transparent;\n  color: #C5C6C6;\n  outline: 0;\n  border: 0;\n  font-size: 1.4em;\n}\n.filter-menu > div ul[data-v-5ba13222] {\n  width: 100%;\n  margin: 0;\n  padding: 0;\n  height: 0;\n  display: none;\n  background-color: #1A1A1A;\n  transition: all 0.4s;\n}\n.filter-menu > div ul li[data-v-5ba13222] {\n  padding: 16px 0 16px 50px;\n  display: block;\n  font-size: 1em;\n  line-height: 3em;\n  opacity: 0;\n  color: #C5C6C6;\n}\n.filter-menu > div ul li .list-of-years[data-v-5ba13222] {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: center;\n  border: 1px solid gray;\n  padding: 0;\n  margin: 0 50px 0 0;\n  line-height: 2.6em;\n}\n.filter-menu > div ul li .list-of-years div[data-v-5ba13222] {\n  color: gray;\n  margin: 0 16px;\n  transition: all 0.4s;\n}\n.filter-menu > div ul li input[data-v-5ba13222] {\n  background-color: #1a1a1a;\n  border: none;\n  border-bottom: 1px solid gray;\n  width: calc(100% - 50px);\n  padding: 10px;\n  line-height: 0em;\n  outline: 0;\n  color: lightgray;\n  transition: all 0.4s;\n}\n.filter-menu > div ul li input[data-v-5ba13222]:focus {\n  border-bottom-color: lightgray;\n}\n.filter-menu > div ul li p[data-v-5ba13222] {\n  display: flex;\n  justify-content: space-between;\n  line-height: 1.4em;\n  font-size: 0.8em;\n  color: gray;\n  margin: -20px 50px 10px 0;\n  text-align: justify;\n}\n.filter-menu .sorts ul li a[data-v-5ba13222] {\n  color: lightgray;\n  text-decoration: none;\n}\n.filter-menu .sorts ul li span[data-v-5ba13222] {\n  font-size: 0.8em;\n  color: gray;\n  text-transform: uppercase;\n}", ""]);
 
 // exports
 
@@ -41150,7 +41226,7 @@ var render = function() {
           _c(
             "div",
             { staticClass: "list-of-years" },
-            _vm._l(_vm.years, function(year, index) {
+            _vm._l(_vm.$store.state.years, function(year, index) {
               return _c(
                 "div",
                 {
@@ -41195,26 +41271,32 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
-      _vm._m(0)
+      _c(
+        "ul",
+        _vm._l(_vm.sorts, function(sort, index) {
+          return _c("li", { key: index }, [
+            _c(
+              "a",
+              {
+                attrs: { href: sort.name },
+                on: {
+                  click: function(e) {
+                    return _vm.sortSelected(e, sort.sorting)
+                  }
+                }
+              },
+              [_vm._v(_vm._s(sort.name))]
+            ),
+            _vm._v(" "),
+            _c("span", [_vm._v(_vm._s(sort.kind))])
+          ])
+        }),
+        0
+      )
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("ul", [
-      _c("li", [_vm._v("A TO Z "), _c("span", [_vm._v("(title)")])]),
-      _vm._v(" "),
-      _c("li", [_vm._v("Z TO A "), _c("span", [_vm._v("(title)")])]),
-      _vm._v(" "),
-      _c("li", [_vm._v("0 TO 9 "), _c("span", [_vm._v("(year)")])]),
-      _vm._v(" "),
-      _c("li", [_vm._v("9 TO 0 "), _c("span", [_vm._v("(year)")])])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -41247,11 +41329,8 @@ var render = function() {
               staticClass: "active",
               attrs: { href: "all" },
               on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  return (function(e) {
-                    return _vm.categoryHandler(e, "all")
-                  })($event)
+                click: function(e) {
+                  return _vm.categoryHandler(e, "all")
                 }
               }
             },
@@ -41263,11 +41342,8 @@ var render = function() {
             {
               attrs: { href: "movies" },
               on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  return (function(e) {
-                    return _vm.categoryHandler(e, "movies")
-                  })($event)
+                click: function(e) {
+                  return _vm.categoryHandler(e, "movies")
                 }
               }
             },
@@ -41279,11 +41355,8 @@ var render = function() {
             {
               attrs: { href: "series" },
               on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  return (function(e) {
-                    return _vm.categoryHandler(e, "series")
-                  })($event)
+                click: function(e) {
+                  return _vm.categoryHandler(e, "series")
                 }
               }
             },
@@ -41317,7 +41390,6 @@ var render = function() {
           _c(
             "div",
             {
-              ref: "lines",
               class: _vm.isListBlocks ? "lines" : "lines active",
               on: {
                 click: function($event) {
@@ -55123,15 +55195,29 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_2__["default"].Store({
     part: 0,
     parts: 2,
     data: [],
-    select: 'all' // genre: 'all genres'
-
+    years: [],
+    select: 'all',
+    currentGenre: 'all',
+    currentYears: 'all',
+    currentSort: 'asort-title'
   },
   mutations: {
-    // FILTER_BY_GENRE(state, genre) {
-    // },
-    // SET_GENRE(state, genre) {
-    //     state.genre = genre;
-    // },
+    SET_SORT: function SET_SORT(state, sort) {
+      state.currentSort = sort;
+    },
+    SET_YEARS: function SET_YEARS(state, years) {
+      state.years = years;
+    },
+    SET_CURRENT_YEARS: function SET_CURRENT_YEARS(state, years) {
+      if (years !== 'all' && years.length > 1) {
+        state.currentYears = years.sort();
+      } else {
+        state.currentYears = years;
+      }
+    },
+    SET_GENRE: function SET_GENRE(state, genre) {
+      state.currentGenre = genre;
+    },
     SET_SELECT: function SET_SELECT(state, select) {
       state.select = select;
     },
@@ -55155,27 +55241,28 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_2__["default"].Store({
     }
   },
   actions: {
-    fetchData: function fetchData(_ref, apiLink) {
+    fetchData: function fetchData(_ref) {
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var commit, state;
+        var commit, dispatch, state, apiLink;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                commit = _ref.commit, state = _ref.state;
+                commit = _ref.commit, dispatch = _ref.dispatch, state = _ref.state;
                 commit('IS_LOADING', true);
                 commit('NEXT_PART', 0);
-                _context.next = 5;
+                apiLink = "/api/".concat(state.select, "/").concat(state.currentGenre, "/").concat(state.currentYears, "/").concat(state.currentSort);
+                _context.next = 6;
                 return axios.get(apiLink).then(function (res) {
                   commit('PARTS_LENGTH', res.data.length);
                   commit('GET_DATA', res.data[state.part]);
                 });
 
-              case 5:
+              case 6:
                 commit('IS_LOADING', false);
                 commit('NEXT_PART', 1);
 
-              case 7:
+              case 8:
               case "end":
                 return _context.stop();
             }
@@ -55183,27 +55270,32 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_2__["default"].Store({
         }, _callee);
       }))();
     },
-    fetchChunkData: function fetchChunkData(_ref2, apiLink) {
+    fetchChunkData: function fetchChunkData(_ref2) {
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
-        var commit, state;
+        var commit, state, apiLink;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 commit = _ref2.commit, state = _ref2.state;
                 commit('IS_CHUNK_LOADING', true);
-                commit('NEXT_PART', state.part + 1);
-                _context2.next = 5;
+                document.body.style.overflow = 'hidden';
+                apiLink = "/api/".concat(state.select, "/").concat(state.currentGenre, "/").concat(state.currentYears, "/").concat(state.currentSort);
+                _context2.next = 6;
                 return axios.get(apiLink).then(function (res) {
-                  var chunk = Object.values(res.data[1]);
+                  console.log(state.part);
+                  var chunk = Object.values(res.data[state.part]);
                   commit('PARTS_LENGTH', res.data.length);
                   commit('GET_CHUNK_DATA', chunk);
+                  console.log(chunk);
                 });
 
-              case 5:
-                commit('IS_CHUNK_LOADING', false);
-
               case 6:
+                commit('NEXT_PART', state.part + 1);
+                commit('IS_CHUNK_LOADING', false);
+                document.body.style.overflow = '';
+
+              case 9:
               case "end":
                 return _context2.stop();
             }

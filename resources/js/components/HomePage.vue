@@ -2,9 +2,9 @@
     <main>
         <div class="sorting">
             <div class="category-sorting">
-                <a href="all" class="active" @click.prevent="e => categoryHandler(e, 'all')">All</a>
-                <a href="movies" @click.prevent="e => categoryHandler(e, 'movies')">Movies</a>
-                <a href="series" @click.prevent="e => categoryHandler(e, 'series')">Series</a>
+                <a href="all" class="active" @click="e => categoryHandler(e, 'all')">All</a>
+                <a href="movies" @click="e => categoryHandler(e, 'movies')">Movies</a>
+                <a href="series" @click="e => categoryHandler(e, 'series')">Series</a>
             </div>
             <div class="type-sorting">
                 <div ref='blocks' :class="isListBlocks ? 'blocks active' : 'blocks'" @click="typeHandler('blocks')">
@@ -14,7 +14,7 @@
                     <div></div>
                     
                 </div>
-                <div ref='lines' :class="isListBlocks ? 'lines' : 'lines active'" @click="typeHandler('lines')">
+                <div :class="isListBlocks ? 'lines' : 'lines active'" @click="typeHandler('lines')">
                     <div></div>
                     <div></div>
                     <div></div>
@@ -30,13 +30,14 @@
 export default {
     data() {
         return {
-            isListBlocks: true
+            isListBlocks: true,
         }
     },
     methods: {
         categoryHandler(e, select) {
+            e.preventDefault();
             this.$store.commit('SET_SELECT', select);
-            this.$store.dispatch('fetchData', `/api/${select}`);
+            this.$store.dispatch('fetchData');
             document.querySelectorAll('.category-sorting a').forEach(el => el.classList.remove('active'));
             e.target.classList = 'active';
         },

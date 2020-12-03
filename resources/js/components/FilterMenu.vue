@@ -25,7 +25,7 @@
                     </p>
                     <div class="list-of-years">
                         <div 
-                            v-for="(year, index) in years" 
+                            v-for="(year, index) in $store.state.years" 
                             :key="index" 
                             :style="year.selected ? 'color: lightgray': ''"
                             @click="yearSelected(index)">
@@ -41,10 +41,10 @@
                 <button>A TO Z</button>
             </div>
             <ul>
-                <li>A TO Z <span>(title)</span></li>
-                <li>Z TO A <span>(title)</span></li>
-                <li>0 TO 9 <span>(year)</span></li>
-                <li>9 TO 0 <span>(year)</span></li>
+                <li v-for="(sort, index) in sorts" :key="index">
+                    <a :href="sort.name" @click="e => sortSelected(e, sort.sorting)">{{ sort.name }}</a> 
+                    <span>{{ sort.kind }}</span>
+                </li>
             </ul>
         </div>
     </div>
@@ -59,15 +59,17 @@ export default {
                 years: false,
                 sorts: false
             },
-            years: [],
-            listOfYears: [],
-            genres: [
-                'All Genres', 'Action', 'Adventure', 'Biography', 'Comedy', 'Drama', 'Document'
-            ]                
+            genres: ['All Genres', 'Action', 'Adventure', 'Biography', 'Comedy', 'Drama', 'Document'],
+            sorts: [
+                { name: 'A TO Z', kind: '(title)', sorting: 'asort-title'},
+                { name: 'Z TO A', kind: '(title)', sorting: 'dsort-title'},
+                { name: '0 TO 9', kind: '(year)', sorting: 'asort-year'},
+                { name: '9 TO 0', kind: '(year)', sorting: 'dsort-year'},
+            ]           
         }
     },
     beforeMount() {
-        this.years = this.createYears
+        this.$store.commit('SET_YEARS', this.createYears);
     },
     computed: {
         createYears() {
@@ -90,8 +92,8 @@ export default {
                 arrow.classList.add('active');
                 list.style.display = 'block';
                 this.$anime.timeline().add({
-                    targets: list,
-                    height: ['0px', '400px'],
+                    targets: list,  /* a-z-a/ 0-9-0  */                    /* genre */                  /*years*/
+                    height: value==='sorts' ? ['0px', '316px'] : (value==='genres' ? ['0px', '536px'] : ['0px', '776px']),
                     easing: 'easeOutExpo',
                     duration: 100
                 }).add({
@@ -122,18 +124,61 @@ export default {
                 }, 1200)
             }
         },
+        /* SORT BY GENRE */
         selectGenre(genre) {
-            // this.$store.commit('SET_GENRE', genre.toLowerCase());
-            this.$store.commit('FILTER_BY_GENRE', genre.toLowerCase());
+            if(genre === 'All Genres') {
+                this.$store.commit('SET_GENRE', 'all');
+            } else {
+                this.$store.commit('SET_GENRE', genre.toLowerCase());
+            }
+            this.$store.dispatch('fetchData');
+            this.dropdownHandler('genres');
         },
+        /* SORT BY YEAR */
         yearSelected(id) {
-            this.years[id].selected = !this.years[id].selected;
+            let years = this.$store.state.years;
+            let currentYears = this.$store.state.currentYears;
+
+            years[id].selected = !years[id].selected;
+            if(currentYears === 'all') {
+                currentYears = [];
+            }
+            if(years[id].selected) {
+                currentYears = currentYears.concat([years[id].current]);
+                if(currentYears.length === years.length) {
+                    currentYears = 'all'
+                }
+            } else {
+                let filtered = [];
+                filtered = years.filter(year => year.selected);
+                filtered = filtered.map(year => year.current);
+                currentYears = filtered;
+            }
+            this.$store.commit('SET_YEARS', years);
+            this.$store.commit('SET_CURRENT_YEARS', currentYears);
+            this.$store.dispatch('fetchData');
         },
         selectAllYears() {
-            this.years.forEach(year => year.selected = true)
+            let years = this.$store.state.years;
+            let currentYears = 'all';
+            years.forEach(year => year.selected = true);
+            this.$store.commit('SET_YEARS', years);
+            this.$store.commit('SET_CURRENT_YEARS', currentYears);
+            this.$store.dispatch('fetchData');
         },
         removeSelectAllYears() {
-            this.years.forEach(year => year.selected = false)
+            let years = this.$store.state.years;
+            let currentYears = [];
+            years.forEach(year => year.selected = false)
+            this.$store.commit('SET_YEARS', years);
+            this.$store.commit('SET_CURRENT_YEARS', currentYears);
+        },
+        /* SORT BY ASC/DESC */
+        sortSelected(e, sort) {
+            e.preventDefault();
+            this.$store.commit('SET_SORT', sort);
+            this.$store.dispatch('fetchData');
+            this.dropdownHandler('sorts');
         }
     }
 }
@@ -234,11 +279,17 @@ export default {
             }
         }
         .sorts {
-            ul li span {
-                font-size: 0.8em;
-                color: gray;
-                text-transform: uppercase;
-            }
+            ul li {
+                a {
+                    color: lightgray;
+                    text-decoration: none;
+                }
+                span {
+                    font-size: 0.8em;
+                    color: gray;
+                    text-transform: uppercase;
+                }
+            } 
         }
     }
 </style>
