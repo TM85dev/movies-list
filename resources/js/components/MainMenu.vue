@@ -7,8 +7,11 @@
                 <div></div>
                 <div></div>
             </div>
+            <div class="logo"></div>
+            <div class="search" @click="$store.commit('SET_SEARCH_PAGE_VISIBLE')"></div>
             <slot></slot>
         </nav>
+        <search-page v-if="$store.state.isSearchPageVisible" />
     </div>
 </template>
 

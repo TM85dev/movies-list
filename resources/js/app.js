@@ -28,10 +28,15 @@ Vue.use(Vuex)
 Vue.component('main-menu', require('./components/MainMenu.vue').default);
 Vue.component('overlay-menu', require('./components/OverlayMenu.vue').default);
 Vue.component('incoming-slider', require('./components/IncomingSlider.vue').default);
-Vue.component('home-page', require('./components/HomePage.vue').default);
 Vue.component('filter-menu', require('./components/FilterMenu.vue').default);
 Vue.component('loader', require('./components/loader.vue').default);
 Vue.component('result-list', require('./components/resultList.vue').default);
+
+Vue.component('home-page', require('./components/pages/HomePage.vue').default);
+Vue.component('movies-page', require('./components/pages/MoviesPage.vue').default);
+Vue.component('series-page', require('./components/pages/SeriesPage.vue').default);
+Vue.component('search-page', require('./components/pages/SearchPage.vue').default);
+Vue.component('incoming-page', require('./components/pages/IncomingPage.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -44,6 +49,8 @@ const store = new Vuex.Store({
         count: 0,
         isLoading: true,
         isChunkLoading: false,
+        isSearchPageVisible: false,
+        isListBlocks: true,
         part: 0,
         parts: 2,
         data: [],
@@ -51,7 +58,8 @@ const store = new Vuex.Store({
         select: 'all',
         currentGenre: 'all',
         currentYears: 'all',
-        currentSort: 'asort-title'
+        currentSort: 'asort-title',
+        query: ''
     },
     mutations: {
         SET_SORT(state, sort) {
@@ -73,11 +81,20 @@ const store = new Vuex.Store({
         SET_SELECT(state, select) {
             state.select = select
         },
+        SET_SEARCH_PAGE_VISIBLE(state) {
+            state.isSearchPageVisible = !state.isSearchPageVisible;
+        },
+        SET_QUERY(state, query) {
+            state.query = query;
+        },
         IS_LOADING(state, loading) {
             state.isLoading = loading
         },
         IS_CHUNK_LOADING(state, loading) {
             state.isChunkLoading = loading
+        },
+        IS_LIST_BLOCKS(state, current) {
+            state.isListBlocks = current;
         },
         NEXT_PART(state, part) {
             state.part = part
@@ -93,7 +110,7 @@ const store = new Vuex.Store({
         }
     },
     actions: {
-        async fetchData({ commit, dispatch, state }) {
+        async fetchData({ commit, state }) {
             commit('IS_LOADING', true);
             commit('NEXT_PART', 0);
             let apiLink = `/api/${state.select}/${state.currentGenre}/${state.currentYears}/${state.currentSort}`;
@@ -111,11 +128,35 @@ const store = new Vuex.Store({
             let apiLink = `/api/${state.select}/${state.currentGenre}/${state.currentYears}/${state.currentSort}`;
             await axios.get(apiLink)
             .then(res => {
-                console.log(state.part);
                 let chunk = Object.values(res.data[state.part]);
                 commit('PARTS_LENGTH', res.data.length);
                 commit('GET_CHUNK_DATA', chunk);
-                console.log(chunk);
+            });
+            commit('NEXT_PART', state.part + 1);
+            commit('IS_CHUNK_LOADING', false);
+            document.body.style.overflow = '';
+        },
+        async fetchSearchData({ commit, state }, query) {
+            commit('IS_LOADING', true);
+            commit('NEXT_PART', 0);
+            let apiLink = `/api/search/${state.select}/${state.currentGenre}/${state.currentYears}/${state.currentSort}/${query}`;
+            await axios.get(apiLink)
+                .then(res => {
+                    commit('PARTS_LENGTH', res.data.length);
+                    commit('GET_DATA', res.data[state.part]);
+                })
+            commit('IS_LOADING', false);
+            commit('NEXT_PART', 1);
+        },
+        async fetchChunkSearchData({ commit, state }, query) {
+            commit('IS_CHUNK_LOADING', true);
+            document.body.style.overflow = 'hidden';
+            let apiLink = `/api/search/${state.select}/${state.currentGenre}/${state.currentYears}/${state.currentSort}/${query}`;
+            await axios.get(apiLink)
+            .then(res => {
+                let chunk = Object.values(res.data[state.part]);
+                commit('PARTS_LENGTH', res.data.length);
+                commit('GET_CHUNK_DATA', chunk);
             });
             commit('NEXT_PART', state.part + 1);
             commit('IS_CHUNK_LOADING', false);

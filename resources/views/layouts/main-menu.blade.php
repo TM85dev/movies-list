@@ -1,7 +1,5 @@
 
 <main-menu>
-    <div class="logo"></div>
-    <div class="search"></div>
     @auth
         <div>
             <a href="#">PROFILE</a>
@@ -28,4 +26,4 @@
         @endguest
     </ul> --}}
 </main-menu>
-<incoming-slider />
+

@@ -18,22 +18,13 @@ use App\Http\Controllers\SerieController;
 |
 */
 
-// Route::get('/api/all', 'Api@all');
-
-// Route::get('/api/all/genres/{genre}', 'Api@genre');
-// Route::get('/api/all/years/{year}', 'Api@year');
-// Route::get('/api/all/{genre}/{year}', 'Api@genreYear');
-
-// Route::get('/api/all/{genre}/{firstYear}-{lastYear}', 'Api@years');
-// Route::get('/api/all/{genre}/{years}', 'Api@years');
 Route::get('/api/all/{genre}/{year}/{sort}', 'Api@index');
+Route::get('/api/movies/{genre}/{year}/{sort}', 'Api@movies');
+Route::get('/api/series/{genre}/{year}/{sort}', 'Api@series');
 
-
-
-
-Route::get('/api/movies', 'Api@movies');
-
-Route::get('/api/series', 'Api@series');
+Route::get('/api/search/all/{genre}/{year}/{sort}/{input}', 'Api@searchAll');
+Route::get('/api/search/movies/{genre}/{year}/{sort}/{input}', 'Api@searchMovies');
+Route::get('/api/search/series/{genre}/{year}/{sort}/{input}', 'Api@searchSeries');
 
 
 Route::resource('/', 'HomeController');

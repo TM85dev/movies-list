@@ -1,20 +1,17 @@
 <template>
     <main>
+        <!-- <incoming-slider /> -->
         <div class="sorting">
-            <div class="category-sorting">
-                <a href="all" class="active" @click="e => categoryHandler(e, 'all')">All</a>
-                <a href="movies" @click="e => categoryHandler(e, 'movies')">Movies</a>
-                <a href="series" @click="e => categoryHandler(e, 'series')">Series</a>
-            </div>
+            <div class="category">Movies</div>
             <div class="type-sorting">
-                <div ref='blocks' :class="isListBlocks ? 'blocks active' : 'blocks'" @click="typeHandler('blocks')">
+                <div ref='blocks' :class="$store.state.isListBlocks ? 'blocks active' : 'blocks'" @click="typeHandler('blocks')">
                     <div></div>
                     <div></div>
                     <div></div>
                     <div></div>
                     
                 </div>
-                <div :class="isListBlocks ? 'lines' : 'lines active'" @click="typeHandler('lines')">
+                <div :class="$store.state.isListBlocks ? 'lines' : 'lines active'" @click="typeHandler('lines')">
                     <div></div>
                     <div></div>
                     <div></div>
@@ -22,25 +19,17 @@
             </div>
         </div>
         <filter-menu />
-        <result-list :isListBlocks="isListBlocks" />
+        <result-list />
     </main>    
 </template>
 
 <script>
 export default {
-    data() {
-        return {
-            isListBlocks: true,
-        }
+    mounted() {
+        this.$store.commit('SET_SELECT', 'movies');
+        this.$store.dispatch('fetchData');
     },
     methods: {
-        categoryHandler(e, select) {
-            e.preventDefault();
-            this.$store.commit('SET_SELECT', select);
-            this.$store.dispatch('fetchData');
-            document.querySelectorAll('.category-sorting a').forEach(el => el.classList.remove('active'));
-            e.target.classList = 'active';
-        },
         typeHandler(value) {
             this.isListBlocks = value==='blocks' ? true : false;
         }
@@ -58,24 +47,11 @@ main {
         height: 60px;
         width: 95%;
         margin: 0 auto;
-        .category-sorting {
-            display: flex;
-            height: 100%;
-            align-items: center;
-            margin-top: 6px;
-            a {
-                font-size: 1.36em;
-                color: $gray;
-                margin: 0 10px;
-                text-decoration: none;
-                transition: all 0.4s;
-                &.active {
-                    color: $lightgray;
-                }
-                &:hover {
-                    color: white;
-                }
-            }
+        .category {
+            align-self: center;
+            font-size: 1.36em;
+            color: $lightgray;
+            margin: 6px 10px 0 10px;
         }
         .type-sorting {
             display: flex;

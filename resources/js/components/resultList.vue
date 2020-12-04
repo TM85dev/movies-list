@@ -2,13 +2,13 @@
     <div v-if="$store.state.isLoading">
         <loader />
     </div>
-    <div v-else id="list-items" :class="isListBlocks ? 'blocks-list' : 'lines-list'">
+    <div v-else id="list-items" :class="$store.state.isListBlocks ? 'blocks-list' : 'lines-list'">
         <div class="movie" v-for="(movie, index) in $store.state.data" :key="index">
             <img src="/img/rashomon.png" :alt="movie.title">
             <div class="info">
                 <div class="describe">
                     <p>{{ movie.title }}</p>
-                    <p>{{ movie.genre }} | {{ movie.time }}min | {{ movie.release_date }}</p>
+                    <p>{{ movie.genre }} | {{ movie.time }}min | {{ movie.year }}</p>
                 </div>
                 <div class="stars">
                     <div v-for="star in 5" :key="star"></div>
@@ -23,21 +23,15 @@
 
 <script>
 export default {
-    props: [
-        'isListBlocks'
-    ],
-    data() {
-        return {
-        }
-    },
     mounted() {
-        this.$store.dispatch('fetchData');
         this.$nextTick(function() {
             window.addEventListener('scroll', this.onScroll);
         })
     },
     beforeDestroy() {
-        window.removeEventListener(this.onScroll);
+        window.removeEventListener('scroll', this.onScroll);
+        this.$store.commit('SET_QUERY', '');
+        this.$store.dispatch('fetchData');
     },
     methods: {
         onScroll() {
@@ -47,7 +41,11 @@ export default {
                     let marginTopElement = element.getBoundingClientRect().bottom;
                     let innerHeight = window.innerHeight;
                     if((marginTopElement - innerHeight) < 100) {
-                        this.$store.dispatch('fetchChunkData');
+                        if(this.$store.state.query === '') {
+                            this.$store.dispatch('fetchChunkData');
+                        } else {
+                            this.$store.dispatch('fetchChunkSearchData', this.$store.state.query);
+                        }
                     }
                 }
             }
