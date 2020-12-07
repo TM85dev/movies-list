@@ -31,6 +31,7 @@ Vue.component('incoming-slider', require('./components/IncomingSlider.vue').defa
 Vue.component('filter-menu', require('./components/FilterMenu.vue').default);
 Vue.component('loader', require('./components/loader.vue').default);
 Vue.component('result-list', require('./components/resultList.vue').default);
+Vue.component('movie-list', require('./components/MovieList.vue').default);
 
 Vue.component('home-page', require('./components/pages/HomePage.vue').default);
 Vue.component('movies-page', require('./components/pages/MoviesPage.vue').default);
@@ -59,11 +60,21 @@ const store = new Vuex.Store({
         currentGenre: 'all',
         currentYears: 'all',
         currentSort: 'asort-title',
+        displaySort: 'A TO Z',
         query: ''
     },
     mutations: {
+        RESET_FILTER(state) {
+            state.currentGenre = 'all',
+            state.currentYears = 'all',
+            state.currentSort = 'asort-title',
+            state.displaySort = 'A TO Z'
+        },
         SET_SORT(state, sort) {
             state.currentSort = sort;
+        },
+        SET_DISPLAY_SORT(state, sort) {
+            state.displaySort = sort;
         },
         SET_YEARS(state, years) {
             state.years = years;
@@ -136,22 +147,26 @@ const store = new Vuex.Store({
             commit('IS_CHUNK_LOADING', false);
             document.body.style.overflow = '';
         },
-        async fetchSearchData({ commit, state }, query) {
+        async fetchSearchData({ commit, state }) {
             commit('IS_LOADING', true);
             commit('NEXT_PART', 0);
-            let apiLink = `/api/search/${state.select}/${state.currentGenre}/${state.currentYears}/${state.currentSort}/${query}`;
+            const query = state.query.length > 0 ? state.query : '*';
+            const years = state.currentYears.length > 0 ? state.currentYears : 'all';
+            const apiLink = `/api/search/${state.select}/${state.currentGenre}/${years}/${state.currentSort}/${query}`;
             await axios.get(apiLink)
                 .then(res => {
                     commit('PARTS_LENGTH', res.data.length);
                     commit('GET_DATA', res.data[state.part]);
                 })
-            commit('IS_LOADING', false);
-            commit('NEXT_PART', 1);
-        },
-        async fetchChunkSearchData({ commit, state }, query) {
+                commit('IS_LOADING', false);
+                commit('NEXT_PART', 1);
+            },
+        async fetchChunkSearchData({ commit, state }) {
             commit('IS_CHUNK_LOADING', true);
             document.body.style.overflow = 'hidden';
-            let apiLink = `/api/search/${state.select}/${state.currentGenre}/${state.currentYears}/${state.currentSort}/${query}`;
+            const query = state.query.length > 0 ? state.query : '*';
+            const years = state.currentYears.length > 0 ? state.currentYears : 'all';
+            const apiLink = `/api/search/${state.select}/${state.currentGenre}/${years}/${state.currentSort}/${query}`;
             await axios.get(apiLink)
             .then(res => {
                 let chunk = Object.values(res.data[state.part]);

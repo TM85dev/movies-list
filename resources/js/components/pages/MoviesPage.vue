@@ -31,7 +31,7 @@ export default {
     },
     methods: {
         typeHandler(value) {
-            this.isListBlocks = value==='blocks' ? true : false;
+            this.$store.state.isListBlocks = value==='blocks' ? true : false;
         }
     }
 }

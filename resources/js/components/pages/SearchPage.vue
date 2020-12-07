@@ -30,6 +30,12 @@
         </div>
         <result-list />
     </div>
+    <div class="aside-menu">
+        <filter-menu :isSearchPage="true" />
+        <div class="toggle-button" @click="toggleButton">
+            <img src="/img/arrow.png" alt="arrow" />
+        </div>
+    </div>
     <div class="bg-search"></div>
 </div>
 </template>
@@ -38,10 +44,15 @@
 export default {
     data() {
         return {
+            isOpenAside: false,
             query: this.$store.state.query,
+            location: window.location.pathname.slice(1)
         }
     },
     mounted() {
+        this.$store.commit('SET_SELECT', 'all');
+        this.$store.commit('RESET_FILTER');
+        this.$store.dispatch('fetchSearchData');
         this.$anime.timeline().add({
             targets: '.search-page, .bg-search',
             translateX: [-20, 0],
@@ -56,11 +67,28 @@ export default {
             duration: 300
         })
     },
+    beforeDestroy() {
+        this.$store.commit('SET_QUERY', '');
+        this.$store.commit('SET_SELECT', this.location === '' ? 'all' : this.location);
+        this.$store.commit('RESET_FILTER');
+        const years = this.$store.state.years;
+        years.forEach(year => year.selected = false);
+        this.$store.commit('SET_YEARS', years);
+        this.$store.dispatch('fetchData');
+    },
     methods: {
+        toggleButton() {
+            this.isOpenAside = !this.isOpenAside;
+            this.$anime({
+                targets: '.aside-menu',
+                translateX: this.isOpenAside ? ['calc(-100% + 20px)','calc(0% + 0px)'] : ['calc(0% + 0px)','calc(-100% + 20px)'],
+                easing: 'easeOutExpo'
+            })
+        },
         getDataHandler() {
             this.$store.commit('SET_QUERY', this.query);
             if(this.query.length > 2) {
-                this.$store.dispatch('fetchSearchData', this.query);
+                this.$store.dispatch('fetchSearchData');
             }
         },
         typeHandler(value) {
@@ -93,6 +121,7 @@ $top-bg: #1A1A1A;
 $bg: #2B2A29;
 $lightgray: #C5C6C6;
 $gray: #727271;
+$green: #009846;
 $logo: url('/img/logo.png');
 $search: url('/img/search.png');
 .search-page {
@@ -204,6 +233,28 @@ $search: url('/img/search.png');
                     background-color: $lightgray;
                 }
             }
+        }
+    }
+}
+.aside-menu {
+    margin-top: 20px;
+    position: fixed;
+    display: flex;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    transform: translateX(calc(-100% + 20px));
+    .toggle-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 16px;
+        width: 26px;
+        background-color: $green;
+        img {
+            filter: brightness(0.1);
+            width: 10px;
+            transform: rotateY(180deg);
         }
     }
 }

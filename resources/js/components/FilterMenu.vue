@@ -1,9 +1,24 @@
 <template>
     <div class="filter-menu">
+        <div v-if="isSearchPage" class="selects">
+            <div class="title" @click="dropdownHandler('selects')">
+                <div class="arrow"></div>
+                <button>
+                    {{ $store.state.select.toUpperCase() }}
+                </button>
+            </div>
+            <ul>
+                <li v-for="select in selects" :key="select">
+                    <a @click.prevent="selectSelects(select)">{{ select }}</a>
+                </li>
+            </ul>
+        </div>
         <div class="genres">
             <div class="title" @click="dropdownHandler('genres')">
                 <div class="arrow"></div>
-                <button>ALL GENRES</button>
+                <button>
+                    {{ $store.state.currentGenre==='all' ? 'ALL GENRES' : $store.state.currentGenre.toUpperCase() }}
+                </button>
             </div>
             <ul>
                 <li v-for="genre in genres" :key="genre">
@@ -38,11 +53,13 @@
         <div class="sorts">
             <div class="title" @click="dropdownHandler('sorts')">
                 <div class="arrow"></div>
-                <button>A TO Z</button>
+                <button>
+                    {{ $store.state.displaySort }}
+                </button>
             </div>
             <ul>
                 <li v-for="(sort, index) in sorts" :key="index">
-                    <a :href="sort.name" @click="e => sortSelected(e, sort.sorting)">{{ sort.name }}</a> 
+                    <a :href="sort.name" @click="e => sortSelected(e, sort)">{{ sort.name }}</a> 
                     <span>{{ sort.kind }}</span>
                 </li>
             </ul>
@@ -52,12 +69,16 @@
 
 <script>
 export default {
+    props: [
+        'isSearchPage'
+    ],
     data() {
         return {
             toggles: {
                 genres: false,
                 years: false,
-                sorts: false
+                sorts: false,
+                selects: false
             },
             genres: ['All Genres', 'Action', 'Adventure', 'Biography', 'Comedy', 'Drama', 'Document'],
             sorts: [
@@ -65,7 +86,8 @@ export default {
                 { name: 'Z TO A', kind: '(title)', sorting: 'dsort-title'},
                 { name: '0 TO 9', kind: '(year)', sorting: 'asort-year'},
                 { name: '9 TO 0', kind: '(year)', sorting: 'dsort-year'},
-            ]           
+            ],
+            selects: ['All', 'Movies', 'Series']
         }
     },
     beforeMount() {
@@ -78,22 +100,23 @@ export default {
                 yearsList.push({selected: false, current: i});
             }
             return yearsList;
-        }
+        },
     },
     methods: {
         dropdownHandler(value) {
             this.toggles.genres = value==='genres' ? !this.toggles.genres : this.toggles.genres;
             this.toggles.years = value==='years' ? !this.toggles.years : this.toggles.years;
             this.toggles.sorts = value==='sorts' ? !this.toggles.sorts : this.toggles.sorts;
+            this.toggles.selects = value==='selects' ? !this.toggles.selects : this.toggles.selects;
             const arrow = document.querySelector(`.filter-menu .${value} .arrow`);
             const list = document.querySelector(`.filter-menu .${value} ul`);
             const label = document.querySelector(`.filter-menu .${value} label`);
-            if((value==='genres' && this.toggles.genres) || (value==='years' && this.toggles.years) || (value==='sorts' && this.toggles.sorts)) {
+            if((value==='genres' && this.toggles.genres) || (value==='years' && this.toggles.years) || (value==='sorts' && this.toggles.sorts || (value==='selects' && this.toggles.selects))) {
                 arrow.classList.add('active');
                 list.style.display = 'block';
                 this.$anime.timeline().add({
                     targets: list,  /* a-z-a/ 0-9-0  */                    /* genre */                  /*years*/
-                    height: value==='sorts' ? ['0px', '316px'] : (value==='genres' ? ['0px', '536px'] : ['0px', '776px']),
+                    height: value==='sorts' ? ['0px', '316px'] : (value==='genres' ? ['0px', '536px'] : (value==='years' ? ['0px', '776px'] : ['0px', '240px'])),
                     easing: 'easeOutExpo',
                     duration: 100
                 }).add({
@@ -124,21 +147,34 @@ export default {
                 }, 1200)
             }
         },
+        /* SORT BY SELECTS */
+        selectSelects(select) {
+            this.dropdownHandler('selects');
+            this.$store.commit('SET_SELECT', select.toLowerCase());
+            if(this.isSearchPage) {
+                this.$store.dispatch('fetchSearchData');
+            } else {
+                this.$store.dispatch('fetchData');
+            }
+        },
         /* SORT BY GENRE */
         selectGenre(genre) {
+            this.dropdownHandler('genres');
             if(genre === 'All Genres') {
                 this.$store.commit('SET_GENRE', 'all');
             } else {
                 this.$store.commit('SET_GENRE', genre.toLowerCase());
             }
-            this.$store.dispatch('fetchData');
-            this.dropdownHandler('genres');
+            if(this.isSearchPage) {
+                this.$store.dispatch('fetchSearchData');
+            } else {
+                this.$store.dispatch('fetchData');
+            }
         },
         /* SORT BY YEAR */
         yearSelected(id) {
             let years = this.$store.state.years;
             let currentYears = this.$store.state.currentYears;
-
             years[id].selected = !years[id].selected;
             if(currentYears === 'all') {
                 currentYears = [];
@@ -156,7 +192,11 @@ export default {
             }
             this.$store.commit('SET_YEARS', years);
             this.$store.commit('SET_CURRENT_YEARS', currentYears);
-            this.$store.dispatch('fetchData');
+            if(this.isSearchPage) {
+                this.$store.dispatch('fetchSearchData');
+            } else {
+                this.$store.dispatch('fetchData');
+            }
         },
         selectAllYears() {
             let years = this.$store.state.years;
@@ -164,7 +204,11 @@ export default {
             years.forEach(year => year.selected = true);
             this.$store.commit('SET_YEARS', years);
             this.$store.commit('SET_CURRENT_YEARS', currentYears);
-            this.$store.dispatch('fetchData');
+            if(this.isSearchPage) {
+                this.$store.dispatch('fetchSearchData');
+            } else {
+                this.$store.dispatch('fetchData');
+            }
         },
         removeSelectAllYears() {
             let years = this.$store.state.years;
@@ -176,9 +220,14 @@ export default {
         /* SORT BY ASC/DESC */
         sortSelected(e, sort) {
             e.preventDefault();
-            this.$store.commit('SET_SORT', sort);
-            this.$store.dispatch('fetchData');
+            this.$store.commit('SET_SORT', sort.sorting);
+            this.$store.commit('SET_DISPLAY_SORT', sort.name);
             this.dropdownHandler('sorts');
+            if(this.isSearchPage) {
+                this.$store.dispatch('fetchSearchData');
+            } else {
+                this.$store.dispatch('fetchData');
+            }
         }
     }
 }
@@ -192,6 +241,7 @@ export default {
         display: flex;
         flex-direction: column;
         margin-top: 16px;
+        width: 100%;
         &>div {
             .title {
                 display: flex;
@@ -248,7 +298,7 @@ export default {
                         line-height: 2.6em;
                         div {
                             color: gray;
-                            margin: 0 16px;
+                            margin: 0 12px;
                             transition: all 0.4s;
                         }
                     }

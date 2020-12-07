@@ -3,18 +3,7 @@
         <loader />
     </div>
     <div v-else id="list-items" :class="$store.state.isListBlocks ? 'blocks-list' : 'lines-list'">
-        <div class="movie" v-for="(movie, index) in $store.state.data" :key="index">
-            <img src="/img/rashomon.png" :alt="movie.title">
-            <div class="info">
-                <div class="describe">
-                    <p>{{ movie.title }}</p>
-                    <p>{{ movie.genre }} | {{ movie.time }}min | {{ movie.year }}</p>
-                </div>
-                <div class="stars">
-                    <div v-for="star in 5" :key="star"></div>
-                </div>
-            </div>
-        </div>
+        <movie-list v-for="(movie, index) in $store.state.data" :key="index" :movie="movie" />
         <div v-if="$store.state.isChunkLoading">
             <loader />
         </div>
@@ -24,14 +13,14 @@
 <script>
 export default {
     mounted() {
+
         this.$nextTick(function() {
             window.addEventListener('scroll', this.onScroll);
-        })
+        });
     },
     beforeDestroy() {
         window.removeEventListener('scroll', this.onScroll);
-        this.$store.commit('SET_QUERY', '');
-        this.$store.dispatch('fetchData');
+
     },
     methods: {
         onScroll() {
@@ -44,7 +33,7 @@ export default {
                         if(this.$store.state.query === '') {
                             this.$store.dispatch('fetchChunkData');
                         } else {
-                            this.$store.dispatch('fetchChunkSearchData', this.$store.state.query);
+                            this.$store.dispatch('fetchChunkSearchData');
                         }
                     }
                 }
@@ -54,7 +43,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
     $bg: #1A1A1A;
     $lightgray: #C5C6C6;
     .blocks-list {
@@ -70,6 +59,8 @@ export default {
             margin-bottom: 20px;
             display: flex;
             flex-direction: column;
+            opacity: 0;
+            transition: all 0.4s;
             img {
                 margin: 5%;
                 width: 90%;
@@ -116,12 +107,12 @@ export default {
         }
     }
     .lines-list {
-        margin: 20px 0;
+        margin: 20px auto 0 auto;
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
-        width: 100%;
+        width: 95%;
         .movie {
             background-color: $bg;
             width: 100%;
@@ -144,7 +135,8 @@ export default {
                     justify-content: center;
                     p:first-of-type {
                         color: white;
-                        margin: 0 0 2px 10%;
+                        margin: 0 0 2px 0;
+                        padding-left: 5%;
                         font-size: 0.8em;
                         font-weight: bold;
                         white-space: nowrap;
@@ -159,7 +151,8 @@ export default {
                         text-overflow: ellipsis;
                         overflow: hidden;
                         width: 100%;
-                        margin: 0 0 5% 10%;
+                        margin: 0 0 5% 0;
+                        padding-left: 5%;
                     }
                 }
                 .stars {
@@ -167,7 +160,6 @@ export default {
                     display: flex;
                     justify-content: space-evenly;
                     align-items: flex-start;
-                    margin-left: 5%;
                     div {
                         clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
                         background-color: #C5C6C6;

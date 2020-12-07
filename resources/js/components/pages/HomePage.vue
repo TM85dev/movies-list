@@ -3,12 +3,14 @@
         <incoming-slider />
         <div class="sorting">
             <div class="category-sorting">
-                <a href="all" class="active" @click="e => categoryHandler(e, 'all')">All</a>
-                <a href="movies" @click="e => categoryHandler(e, 'movies')">Movies</a>
-                <a href="series" @click="e => categoryHandler(e, 'series')">Series</a>
+                <a v-for="link in links" :key="link" 
+                    :href="link.toLowerCase()" 
+                    :class="$store.state.select===link.toLowerCase() ? 'active' : ''" 
+                    @click.prevent="categoryHandler(link.toLowerCase())
+                ">{{ link }}</a>
             </div>
             <div class="type-sorting">
-                <div ref='blocks' :class="$store.state.isListBlocks ? 'blocks active' : 'blocks'" @click="typeHandler('blocks')">
+                <div :class="$store.state.isListBlocks ? 'blocks active' : 'blocks'" @click="typeHandler('blocks')">
                     <div></div>
                     <div></div>
                     <div></div>
@@ -29,17 +31,19 @@
 
 <script>
 export default {
+    data() {
+        return {
+            links: ['All', 'Movies', 'Series']
+        }
+    },
     mounted() {
         this.$store.commit('SET_SELECT', 'all');
         this.$store.dispatch('fetchData');
     },
     methods: {
-        categoryHandler(e, select) {
-            e.preventDefault();
+        categoryHandler(select) {
             this.$store.commit('SET_SELECT', select);
             this.$store.dispatch('fetchData');
-            document.querySelectorAll('.category-sorting a').forEach(el => el.classList.remove('active'));
-            e.target.classList = 'active';
         },
         typeHandler(value) {
             this.$store.commit('IS_LIST_BLOCKS', value==='blocks' ? true : false);
