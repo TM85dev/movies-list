@@ -37,7 +37,7 @@ Vue.component('home-page', require('./components/pages/HomePage.vue').default);
 Vue.component('movies-page', require('./components/pages/MoviesPage.vue').default);
 Vue.component('series-page', require('./components/pages/SeriesPage.vue').default);
 Vue.component('search-page', require('./components/pages/SearchPage.vue').default);
-Vue.component('incoming-page', require('./components/pages/IncomingPage.vue').default);
+Vue.component('incomings-page', require('./components/pages/IncomingsPage.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

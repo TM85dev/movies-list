@@ -6,7 +6,7 @@
             <li><a href="/" :class="activeLink('/')">Home</a></li>
             <li><a href="/movies" :class="activeLink('/movies')">Movies</a></li>
             <li><a href="/series" :class="activeLink('/series')">Series</a></li>
-            <li><a href="/incomings" :class="activeLink('/incoming')">Incoming</a></li>
+            <li><a href="/incomings" :class="activeLink('/incomings')">Incomings</a></li>
             <li><a href="/sign-in" :class="activeLink('/sign-in')">Sign In</a></li>
         </ul>
     </nav>    

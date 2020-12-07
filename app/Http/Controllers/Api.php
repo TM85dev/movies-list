@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Movie;
 use App\Models\Serie;
+use App\Models\Incoming;
 
 class Api extends Controller
 {
@@ -131,6 +132,11 @@ class Api extends Controller
             $series = $series->sortByDesc('year')->values()->chunk(10);
         }
         return response()->json($series);
+    }
+
+    public function incomings(Incoming $incoming) {
+        $incomings = $incoming->all();
+        return response()->json($incomings);
     }
 }
 

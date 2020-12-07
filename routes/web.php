@@ -18,6 +18,7 @@ use App\Http\Controllers\SerieController;
 |
 */
 
+/* API */
 Route::get('/api/all/{genre}/{year}/{sort}', 'Api@index');
 Route::get('/api/movies/{genre}/{year}/{sort}', 'Api@movies');
 Route::get('/api/series/{genre}/{year}/{sort}', 'Api@series');
@@ -26,10 +27,15 @@ Route::get('/api/search/all/{genre}/{year}/{sort}/{input}', 'Api@searchAll');
 Route::get('/api/search/movies/{genre}/{year}/{sort}/{input}', 'Api@searchMovies');
 Route::get('/api/search/series/{genre}/{year}/{sort}/{input}', 'Api@searchSeries');
 
+Route::get('/api/incomings', 'Api@incomings');
 
+/* VIEWS */
 Route::resource('/', 'HomeController');
 Route::resource('/movies', 'MovieController');
 Route::resource('/series', 'SerieController');
+Route::get('/incomings', function() {
+    return view('incomings');
+});
 
 Auth::routes();
 
