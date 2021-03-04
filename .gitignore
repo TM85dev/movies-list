@@ -2,9 +2,10 @@
 
 /public/fonts
 
-/public/images
+/public/images/*.png
 
-/public/img
+/public/img/*.svg
+/public/img/*.png
 
 /public/hot
 
