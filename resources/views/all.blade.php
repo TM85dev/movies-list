@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-
-<movies-page />
-
+    
+    <all-page auth="{{ auth()->user() }}" />
+    
 @endsection

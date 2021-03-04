@@ -2,6 +2,6 @@
 
 @section('content')
 
-<incomings-page />
+<incomings-page auth="{{ auth()->user() }}" />
 
 @endsection

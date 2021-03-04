@@ -2,6 +2,6 @@
 
 @section('content')
 
-<series-page />
+<profile-page auth='{{ Auth::user() }}' />
 
 @endsection

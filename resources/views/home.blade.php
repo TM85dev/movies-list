@@ -2,6 +2,6 @@
 
 @section('content')
     
-    <home-page />
+    <home-page auth="{{ auth()->user() }}" />
     
 @endsection

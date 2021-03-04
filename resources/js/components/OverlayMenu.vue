@@ -1,19 +1,26 @@
 <template>
     <nav class='overlay-menu'>
-        <div class="close" @click="closeOverlayMenu">x</div>
+        <div class="close" @click="closeOverlayMenu"></div>
         <div class="logo"></div>
         <ul>
-            <li><a href="/" :class="activeLink('/')">Home</a></li>
-            <li><a href="/movies" :class="activeLink('/movies')">Movies</a></li>
-            <li><a href="/series" :class="activeLink('/series')">Series</a></li>
-            <li><a href="/incomings" :class="activeLink('/incomings')">Incomings</a></li>
-            <li><a href="/sign-in" :class="activeLink('/sign-in')">Sign In</a></li>
+            <li><a href="/movies-list/" :class="activeLink('/movies-list/')">Home</a></li>
+            <li><a href="/movies-list/movies" :class="activeLink('/movies-list/movies')">Movies</a></li>
+            <li><a href="/movies-list/series" :class="activeLink('/movies-list/series')">Series</a></li>
+            <li><a href="/movies-list/movies-series" :class="activeLink('/movies-list/movies-series')">Movies & Series</a></li>
+            <li><a href="/movies-list/incomings" :class="activeLink('/movies-list/incomings')">Incomings</a></li>
+            <li>
+                <a v-if="user" :href="`/movies-list/profile/${user.id}`" :class="activeLink(`/movies-list/profile/${user.id}`)">Profile</a>
+                <a v-else href="/movies-list/sign-in" :class="activeLink('/movies-list/sign-in')" @click.prevent="$store.commit('SET_SIGN_IN_PAGE_VISIBLE')">Sign In</a>
+            </li>
         </ul>
     </nav>    
 </template>
 
 <script>
 export default {
+    props: [
+        'user'
+    ],
     methods: {
         activeLink(path) {
             return window.location.pathname === path ? 'active' : ''
@@ -44,7 +51,7 @@ export default {
 <style lang="scss" scoped>
 $menu-bg: #1A1A1A;
 $green: #009846;
-$logo: url('/img/logo.png');
+$logo: url('/movies-list/img/logo.png');
     nav.overlay-menu {
         position: fixed;
         display: none;
@@ -61,6 +68,16 @@ $logo: url('/img/logo.png');
             color: white;
             font-size: 2em;
             cursor: pointer;
+            background-image: url('/movies-list/img/close.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            width: 20px;
+            height: 20px;
+            filter: brightness(0.8);
+            transition: all 0.4s;
+            &:hover {
+                filter: brightness(1);
+            }
         }
         .logo {
             margin: 100px auto 0 auto;

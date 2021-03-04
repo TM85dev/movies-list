@@ -1,7 +1,21 @@
-@extends('layouts.app')
 
-@section('content')
-<div class="container">
+<sign-in-form>
+    <div>
+        <h2>Login</h2>
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+            <label>
+                <input type="email" name="email" placeholder="email" required autocomplete="email" autofocus />
+            </label>
+            <label>
+                <input type="password" name="password" placeholder="password" required autocomplete="password" autofocus />
+            </label>
+            <button type="submit">LOGIN</button>
+        </form>
+    </div>
+</sign-in-form>
+
+{{-- <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -69,5 +83,4 @@
             </div>
         </div>
     </div>
-</div>
-@endsection
+</div> --}}

@@ -17,7 +17,8 @@
 
 <style lang="scss" scoped>
 .sk-circle {
-  margin: 100px auto;
+  margin: 40px auto;
+  // margin: 100px auto;
   width: 40px;
   height: 40px;
   position: relative;

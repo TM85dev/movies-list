@@ -17,7 +17,7 @@ class CreateIncomingsTable extends Migration
             $table->id();
             $table->string('title');
             $table->date('release_date');
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

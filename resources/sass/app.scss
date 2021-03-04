@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css?family=Nunito');
 @font-face {
     font-family: 'GothicR';
-    src: url("/fonts/GOTHIC.woff");
+    src: url("/movies-list/fonts/GOTHIC.woff");
 }
 
 // Variables
@@ -10,3 +10,18 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+.error-request {
+    color: $green;
+    position: absolute;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+    h1 {
+        font-weight: bold;
+        font-size: 1.6em;
+    }
+    h2 {
+        font-size: 1em;
+    }
+}

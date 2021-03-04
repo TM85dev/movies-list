@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
+use App\Models\User;
 use App\Models\Movie;
 use App\Models\Serie;
 use App\Models\Incoming;
+use App\Models\Post;
 
 class Api extends Controller
 {
@@ -21,14 +25,20 @@ class Api extends Controller
             $movies = $movie->yearFilter($movies, $year);
             $series = $serie->yearFilter($series, $year);
         }
+        foreach($movies as $movie) {
+            $movies->concat($movie->rate);
+        }
+        foreach($series as $serie) {
+            $series->concat($serie->rate);
+        }
         if($sort === 'asort-title') {
-            $all = $movies->concat($series)->sortBy('title')->values()->chunk(10);
+            $all = $movies->concat($series)->sortBy('title')->values()->chunk(12);
         } elseif($sort === 'dsort-title') {
-            $all = $movies->concat($series)->sortByDesc('title')->values()->chunk(10);
+            $all = $movies->concat($series)->sortByDesc('title')->values()->chunk(12);
         } elseif($sort === 'asort-year') {
-            $all = $movies->concat($series)->sortBy('year')->values()->chunk(10);
+            $all = $movies->concat($series)->sortBy('year')->values()->chunk(12);
         } elseif($sort === 'dsort-year') {
-            $all = $movies->concat($series)->sortByDesc('year')->values()->chunk(10);
+            $all = $movies->concat($series)->sortByDesc('year')->values()->chunk(12);
         }
         return response()->json($all);
     }
@@ -41,14 +51,17 @@ class Api extends Controller
         if($year !== 'all') {
             $movies = $movie->yearFilter($movies, $year);
         }
+        foreach($movies as $movie) {
+            $movies->concat($movie->rate);
+        }
         if($sort === 'asort-title') {
-            $movies = $movies->sortBy('title')->values()->chunk(10);
+            $movies = $movies->sortBy('title')->values()->chunk(12);
         } elseif($sort === 'dsort-title') {
-            $movies = $movies->sortByDesc('title')->values()->chunk(10);
+            $movies = $movies->sortByDesc('title')->values()->chunk(12);
         } elseif($sort === 'asort-year') {
-            $movies = $movies->sortBy('year')->values()->chunk(10);
+            $movies = $movies->sortBy('year')->values()->chunk(12);
         } elseif($sort === 'dsort-year') {
-            $movies = $movies->sortByDesc('year')->values()->chunk(10);
+            $movies = $movies->sortByDesc('year')->values()->chunk(12);
         }
         return response()->json($movies);
     }
@@ -61,14 +74,17 @@ class Api extends Controller
         if($year !== 'all') {
             $series = $serie->yearFilter($series, $year);
         }
+        foreach($series as $serie) {
+            $series->concat($serie->rate);
+        }
         if($sort === 'asort-title') {
-            $series = $series->sortBy('title')->values()->chunk(10);
+            $series = $series->sortBy('title')->values()->chunk(12);
         } elseif($sort === 'dsort-title') {
-            $series = $series->sortByDesc('title')->values()->chunk(10);
+            $series = $series->sortByDesc('title')->values()->chunk(12);
         } elseif($sort === 'asort-year') {
-            $series = $series->sortBy('year')->values()->chunk(10);
+            $series = $series->sortBy('year')->values()->chunk(12);
         } elseif($sort === 'dsort-year') {
-            $series = $series->sortByDesc('year')->values()->chunk(10);
+            $series = $series->sortByDesc('year')->values()->chunk(12);
         }
         return response()->json($series);
     }
@@ -84,14 +100,20 @@ class Api extends Controller
             $movies = $movie->yearFilter($movies, $year);
             $series = $serie->yearFilter($series, $year);
         }
+        foreach($movies as $movie) {
+            $movies->concat($movie->rate);
+        }
+        foreach($series as $serie) {
+            $series->concat($serie->rate);
+        }
         if($sort === 'asort-title') {
-            $all = $movies->concat($series)->sortBy('title')->values()->chunk(10);
+            $all = $movies->concat($series)->sortBy('title')->values()->chunk(12);
         } elseif($sort === 'dsort-title') {
-            $all = $movies->concat($series)->sortByDesc('title')->values()->chunk(10);
+            $all = $movies->concat($series)->sortByDesc('title')->values()->chunk(12);
         } elseif($sort === 'asort-year') {
-            $all = $movies->concat($series)->sortBy('year')->values()->chunk(10);
+            $all = $movies->concat($series)->sortBy('year')->values()->chunk(12);
         } elseif($sort === 'dsort-year') {
-            $all = $movies->concat($series)->sortByDesc('year')->values()->chunk(10);
+            $all = $movies->concat($series)->sortByDesc('year')->values()->chunk(12);
         }
         return response()->json($all);
     }
@@ -103,14 +125,17 @@ class Api extends Controller
         if($year !== 'all') {
             $movies = $movie->yearFilter($movies, $year);
         }
+        foreach($movies as $movie) {
+            $movies->concat($movie->rate);
+        }
         if($sort === 'asort-title') {
-            $movies = $movies->sortBy('title')->values()->chunk(10);
+            $movies = $movies->sortBy('title')->values()->chunk(12);
         } elseif($sort === 'dsort-title') {
-            $movies = $movies->sortByDesc('title')->values()->chunk(10);
+            $movies = $movies->sortByDesc('title')->values()->chunk(12);
         } elseif($sort === 'asort-year') {
-            $movies = $movies->sortBy('year')->values()->chunk(10);
+            $movies = $movies->sortBy('year')->values()->chunk(12);
         } elseif($sort === 'dsort-year') {
-            $movies = $movies->sortByDesc('year')->values()->chunk(10);
+            $movies = $movies->sortByDesc('year')->values()->chunk(12);
         }
         return response()->json($movies);
     }
@@ -122,14 +147,17 @@ class Api extends Controller
         if($year !== 'all') {
             $series = $serie->yearFilter($series, $year);
         }
+        foreach($series as $serie) {
+            $series->concat($serie->rate);
+        }
         if($sort === 'asort-title') {
-            $series = $series->sortBy('title')->values()->chunk(10);
+            $series = $series->sortBy('title')->values()->chunk(12);
         } elseif($sort === 'dsort-title') {
-            $series = $series->sortByDesc('title')->values()->chunk(10);
+            $series = $series->sortByDesc('title')->values()->chunk(12);
         } elseif($sort === 'asort-year') {
-            $series = $series->sortBy('year')->values()->chunk(10);
+            $series = $series->sortBy('year')->values()->chunk(12);
         } elseif($sort === 'dsort-year') {
-            $series = $series->sortByDesc('year')->values()->chunk(10);
+            $series = $series->sortByDesc('year')->values()->chunk(12);
         }
         return response()->json($series);
     }
@@ -138,227 +166,28 @@ class Api extends Controller
         $incomings = $incoming->all();
         return response()->json($incomings);
     }
+
+    public function news($sort) {
+        $posts = Post::all();
+        if($sort === 'asort-title') {
+            $posts = $posts->sortBy('title')->values()->chunk(12);
+        } elseif($sort === 'dsort-title') {
+            $posts = $posts->sortByDesc('title')->values()->chunk(12);
+        } elseif($sort === 'asort-year') {
+            $posts = $posts->sortBy('created_at')->values()->chunk(12);
+        } elseif($sort === 'dsort-year') {
+            $posts = $posts->sortByDesc('created_at')->values()->chunk(12);
+        } else return abort(404);
+        return response()->json($posts);
+    }
+    public function post($id) {
+        $post = Post::find($id);
+        $related_posts = Post::where('id', '!=', $id)->get()->sortBy('created_at')->take(3);
+        $post['related_posts'] = $related_posts;
+        return response()->json($post);
+    }
+
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// public function index($genre, $year, $sort) {
-//     $movies = Movie::all();
-//     $series = Serie::all();
-//     if($genre !== 'all') {
-//         $movies = $movies->filter(function($value, $key) use($genre) {
-//             return strtolower($value['genre']) === $genre;
-//         });
-//         $series = $series->filter(function($value, $key) use($genre) {
-//             return strtolower($value['genre']) === $genre;
-//         });
-//     } 
-//     if($year !== 'all') {
-//         $years = explode(',', $year);
-//         $filter_movies = collect([]);
-//         $filter_series = collect([]);
-//         foreach ($years as $current) {
-//             $filter_movies = $filter_movies->concat($movies->filter(function($value, $key) use($current) {
-//                 return strtolower($value['year']) === $current;
-//             }));
-//             $filter_series = $filter_series->concat($series->filter(function($value, $key) use($current) {
-//                 return strtolower($value['year']) === $current;
-//             }));
-//         }
-//         $movies = $filter_movies;
-//         $series = $filter_series;
-//     }
-//     if($sort === 'asort-title') {
-//         $all = $movies->concat($series)->sortBy('title')->values()->chunk(10);
-//     } elseif($sort === 'dsort-title') {
-//         $all = $movies->concat($series)->sortByDesc('title')->values()->chunk(10);
-//     } elseif($sort === 'asort-year') {
-//         $all = $movies->concat($series)->sortBy('year')->values()->chunk(10);
-//     } elseif($sort === 'dsort-year') {
-//         $all = $movies->concat($series)->sortByDesc('year')->values()->chunk(10);
-//     }
-//     return response()->json($all);
-// }
-
-
-
-// public function movies($genre, $year, $sort) {
-//     $movies = Movie::all();
-//     if($genre !== 'all') {
-//         $movies = $movies->filter(function($value, $key) use($genre) {
-//             return strtolower($value['genre']) === $genre;
-//         });
-//     } 
-//     if($year !== 'all') {
-//         $years = explode(',', $year);
-//         $filter_movies = collect([]);
-//         foreach ($years as $current) {
-//             $filter_movies = $filter_movies->concat($movies->filter(function($value, $key) use($current) {
-//                 return strtolower($value['year']) === $current;
-//             }));
-//         }
-//         $movies = $filter_movies;
-//     }
-//     if($sort === 'asort-title') {
-//         $movies = $movies->sortBy('title')->values()->chunk(10);
-//     } elseif($sort === 'dsort-title') {
-//         $movies = $movies->sortByDesc('title')->values()->chunk(10);
-//     } elseif($sort === 'asort-year') {
-//         $movies = $movies->sortBy('year')->values()->chunk(10);
-//     } elseif($sort === 'dsort-year') {
-//         $movies = $movies->sortByDesc('year')->values()->chunk(10);
-//     }
-//     return response()->json($movies);
-// }
-
-// public function series($genre, $year, $sort) {
-//     $series = Serie::all();
-//     if($genre !== 'all') {
-//         $series = $series->filter(function($value, $key) use($genre) {
-//             return strtolower($value['genre']) === $genre;
-//         });
-//     } 
-//     if($year !== 'all') {
-//         $years = explode(',', $year);
-//         $filter_series = collect([]);
-//         foreach ($years as $current) {
-//             $filter_series = $filter_series->concat($series->filter(function($value, $key) use($current) {
-//                 return strtolower($value['year']) === $current;
-//             }));
-//         }
-//         $series = $filter_series;
-//     }
-//     if($sort === 'asort-title') {
-//         $series = $series->sortBy('title')->values()->chunk(10);
-//     } elseif($sort === 'dsort-title') {
-//         $series = $series->sortByDesc('title')->values()->chunk(10);
-//     } elseif($sort === 'asort-year') {
-//         $series = $series->sortBy('year')->values()->chunk(10);
-//     } elseif($sort === 'dsort-year') {
-//         $series = $series->sortByDesc('year')->values()->chunk(10);
-//     }
-//     return response()->json($series);
-// }
-
-// public function searchAll($genre, $year, $sort, $input) {
-//     $movies = Movie::where('title', 'LIKE', '%'.$input.'%')->get();
-//     $series = Serie::where('title', 'LIKE', '%'.$input.'%')->get();
-//     if($genre !== 'all') {
-//         $movies = $movies->filter(function($value, $key) use($genre) {
-//             return strtolower($value['genre']) === $genre;
-//         });
-//         $series = $series->filter(function($value, $key) use($genre) {
-//             return strtolower($value['genre']) === $genre;
-//         });
-//     } 
-//     if($year !== 'all') {
-//         $years = explode(',', $year);
-//         $filter_movies = collect([]);
-//         $filter_series = collect([]);
-//         foreach ($years as $current) {
-//             $filter_movies = $filter_movies->concat($movies->filter(function($value, $key) use($current) {
-//                 return strtolower($value['year']) === $current;
-//             }));
-//             $filter_series = $filter_series->concat($series->filter(function($value, $key) use($current) {
-//                 return strtolower($value['year']) === $current;
-//             }));
-//         }
-//         $movies = $filter_movies;
-//         $series = $filter_series;
-//     }
-//     if($sort === 'asort-title') {
-//         $all = $movies->concat($series)->sortBy('title')->values()->chunk(10);
-//     } elseif($sort === 'dsort-title') {
-//         $all = $movies->concat($series)->sortByDesc('title')->values()->chunk(10);
-//     } elseif($sort === 'asort-year') {
-//         $all = $movies->concat($series)->sortBy('year')->values()->chunk(10);
-//     } elseif($sort === 'dsort-year') {
-//         $all = $movies->concat($series)->sortByDesc('year')->values()->chunk(10);
-//     }
-//     return response()->json($movies);
-// }
-// public function searchMovies($genre, $year, $sort, $input) {
-//     $movies = Movie::where('title', 'LIKE', '%'.$input.'%')->get();
-//     if($genre !== 'all') {
-//         $movies = $movies->filter(function($value, $key) use($genre) {
-//             return strtolower($value['genre']) === $genre;
-//         });
-//     } 
-//     if($year !== 'all') {
-//         $years = explode(',', $year);
-//         $filter_movies = collect([]);
-//         foreach ($years as $current) {
-//             $filter_movies = $filter_movies->concat($movies->filter(function($value, $key) use($current) {
-//                 return strtolower($value['year']) === $current;
-//             }));
-//         }
-//         $movies = $filter_movies;
-//     }
-//     if($sort === 'asort-title') {
-//         $movies = $movies->sortBy('title')->values()->chunk(10);
-//     } elseif($sort === 'dsort-title') {
-//         $movies = $movies->sortByDesc('title')->values()->chunk(10);
-//     } elseif($sort === 'asort-year') {
-//         $movies = $movies->sortBy('year')->values()->chunk(10);
-//     } elseif($sort === 'dsort-year') {
-//         $movies = $movies->sortByDesc('year')->values()->chunk(10);
-//     }
-//     return response()->json($movies);
-// }
-// public function searchSeries($genre, $year, $sort, $input) {
-//     $series = Serie::where('title', 'LIKE', '%'.$input.'%')->get();
-//     if($genre !== 'all') {
-//         $series = $series->filter(function($value, $key) use($genre) {
-//             return strtolower($value['genre']) === $genre;
-//         });
-//     } 
-//     if($year !== 'all') {
-//         $years = explode(',', $year);
-//         $filter_series = collect([]);
-//         foreach ($years as $current) {
-//             $filter_series = $filter_series->concat($series->filter(function($value, $key) use($current) {
-//                 return strtolower($value['year']) === $current;
-//             }));
-//         }
-//         $series = $filter_series;
-//     }
-//     if($sort === 'asort-title') {
-//         $series = $series->sortBy('title')->values()->chunk(10);
-//     } elseif($sort === 'dsort-title') {
-//         $series = $series->sortByDesc('title')->values()->chunk(10);
-//     } elseif($sort === 'asort-year') {
-//         $series = $series->sortBy('year')->values()->chunk(10);
-//     } elseif($sort === 'dsort-year') {
-//         $series = $series->sortByDesc('year')->values()->chunk(10);
-//     }
-//     return response()->json($movies);
-// }
 
